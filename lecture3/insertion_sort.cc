@@ -18,11 +18,11 @@ void InsertionSortOrg(std::vector<T>* v) {
 }
 
 // Insertion sort using iterators instead of index
-template <typename T, typename Compare = std::greater<T>>
-void InsertionSort(std::vector<T>* v) {
-  for (typename std::vector<T>::iterator itr = std::next(v->begin()); itr != v->end(); ++itr) {
-    typename std::vector<T>::iterator key = itr;
-    typename std::vector<T>::iterator key_prev = std::prev(key);
+template <typename Container, typename Compare = std::greater<typename Container::value_type>>
+void InsertionSort(Container* v) {
+  for (typename Container::iterator itr = std::next(v->begin()); itr != v->end(); ++itr) {
+    typename Container::iterator key = itr;
+    typename Container::iterator key_prev = std::prev(key);
     while (key != v->begin() && Compare()(*key_prev, *key)) {
       // Note that iter_swap swaps the element value not really the iterator
       std::iter_swap(key, key_prev);
@@ -37,7 +37,8 @@ int main() {
   std::cout << in << std::endl;
   InsertionSortOrg(&in);
   std::cout << in << std::endl;
-  InsertionSort<int, std::less<int>>(&in);
-  std::cout << in << std::endl;
+  std::list<int> in2 = {5, 2, 4, 6, 1, 3};
+  InsertionSort<std::list<int>, std::less<int>>(&in2);
+  std::cout << in2 << std::endl;
   return 0;
 }

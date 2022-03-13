@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <list>
+#include <optional>
+#include <vector>
 
 template <typename T>
 std::ostream& operator<<(std::ostream& in, const std::vector<T>& c);

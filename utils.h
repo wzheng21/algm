@@ -5,6 +5,7 @@
 #include <forward_list>
 #include <optional>
 #include <vector>
+#include <memory>
 
 template <typename T>
 std::ostream& operator<<(std::ostream& in, const std::vector<T>& c);

@@ -6,7 +6,7 @@ struct Node {
   static std::shared_ptr<Node> New(const DataType& e);
   DataType value;
   size_t size;
-  //TODO: Add parent node
+  std::weak_ptr<Node> parent;
   std::shared_ptr<Node> left = nullptr;
   std::shared_ptr<Node> right = nullptr;
 };
@@ -33,7 +33,7 @@ private:
 
   NodePtr root_ = nullptr;
 
-  void Insert(NodePtr* root, const NodePtr& node);
+  void Insert(NodePtr* root, NodePtr* node, const NodePtr& p);
 };
 
 template <typename DataType>
@@ -58,20 +58,28 @@ void BST<DataType>::InorderPrint(const NodePtr& node, std::ostream* oss) const {
 template <typename DataType>
 void BST<DataType>::Insert(const DataType& e) {
   NodePtr node = Node<DataType>::New(e);
-  Insert(&root_, node);
+  Insert(&root_, &node, nullptr);
 }
 
 template <typename DataType>
-void BST<DataType>::Insert(NodePtr* root, const NodePtr& node) {
+void BST<DataType>::Insert(NodePtr* root, NodePtr* node, const NodePtr& p) {
   if (!(*root)) {
-    *root = node;
+    *root = *node;
+    (*node)->parent = p;
+#ifdef DEBUG
+    std::cout << "Node: " << (*node)->value;
+    if ((*node)->parent.use_count() > 0) {
+      std::cout << ", parent: " << p->value;
+    }
+    std::cout << std::endl;
+#endif
     return;
   }
   ++(*root)->size;
-  if (node->value < (*root)->value) {
-    return Insert(&((*root)->left), node);
+  if ((*node)->value < (*root)->value) {
+    return Insert(&((*root)->left), node, *root);
   }
-  Insert(&((*root)->right), node);
+  Insert(&((*root)->right), node, *root);
 }
 
 int main() {

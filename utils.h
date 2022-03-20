@@ -6,6 +6,7 @@
 #include <optional>
 #include <vector>
 #include <memory>
+#include <sstream>
 
 template <typename T>
 std::ostream& operator<<(std::ostream& in, const std::vector<T>& c);

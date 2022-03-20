@@ -5,14 +5,14 @@ struct Node {
   Node(const DataType& e);
   static std::shared_ptr<Node> New(const DataType& e);
   DataType value;
-  size_t node_size;
-  std::weak_ptr<Node> parent = nullptr;
+  size_t size;
+  //TODO: Add parent node
   std::shared_ptr<Node> left = nullptr;
   std::shared_ptr<Node> right = nullptr;
 };
 
 template <typename DataType>
-Node<DataType>::Node(const DataType& e) : value(e), node_size(1) {}
+Node<DataType>::Node(const DataType& e) : value(e), size(1) {}
 
 template <typename DataType>
 std::shared_ptr<Node<DataType>> Node<DataType>::New(const DataType& e) {
@@ -21,36 +21,61 @@ std::shared_ptr<Node<DataType>> Node<DataType>::New(const DataType& e) {
 
 template <typename DataType>
 class BST {
+  using NodePtr = std::shared_ptr<Node<DataType>>;
 public:
   BST() = default;
   void Insert(const DataType& e);
   DataType Rank(const DataType& t) const { return 0; };
+
+  void InorderPrint() const;
+  void InorderPrint(const NodePtr& node, std::ostream* s) const;
 private:
-  using NodePtr = std::shared_ptr<Node<DataType>>;
+
   NodePtr root_ = nullptr;
 
-  void Insert(NodePtr root, const DataType& e, const NodePtr& p = nullptr);
+  void Insert(NodePtr root, NodePtr node);
 };
 
 template <typename DataType>
-void BST<DataType>::Insert(const DataType& e) {
-  Insert(root_, e);
+void BST<DataType>::InorderPrint() const {
+  std::ostringstream oss;
+  InorderPrint(root_, &oss);
+  puts(oss.str().c_str());
 }
 
 template <typename DataType>
-void BST<DataType>::Insert(NodePtr root, const DataType& e, const NodePtr& p) {
+void BST<DataType>::InorderPrint(const NodePtr& node, std::ostream* oss) const {
+  if (!node) return;
+  if (node->left) {
+    InorderPrint(node->left, oss);
+    *oss << ',';
+  }
+  *oss << node->value << ',';
+  if (node->right) InorderPrint(node->right, oss);
+}
+
+template <typename DataType>
+void BST<DataType>::Insert(const DataType& e) {
+  NodePtr node = Node<DataType>::New(e);
+  Insert(root_, node);
+}
+
+template <typename DataType>
+void BST<DataType>::Insert(NodePtr root, NodePtr node) {
   if (!root) {
-    root.reset(Node<DataType>::New(e));
+    root = node;
     return;
   }
-  ++root->node_size;
-  if (e < root->value) {
-    if (!root->left) {
-      Insert(root->left, e)
-    }
+  ++root->size;
+  if (node->value < root->value) {
+    return Insert(root->left, node);
   }
+  Insert(root->right, node);
 }
 
 int main() {
+  BST<int> bst;
+  for (int e : {3, 4, 10, 14, 7, 9, 16, 2, 8, 1}) bst.Insert(e);
+  bst.InorderPrint();
   return 0;
 }

@@ -33,7 +33,7 @@ private:
 
   NodePtr root_ = nullptr;
 
-  void Insert(NodePtr root, NodePtr node);
+  void Insert(NodePtr* root, const NodePtr& node);
 };
 
 template <typename DataType>
@@ -48,34 +48,35 @@ void BST<DataType>::InorderPrint(const NodePtr& node, std::ostream* oss) const {
   if (!node) return;
   if (node->left) {
     InorderPrint(node->left, oss);
-    *oss << ',';
   }
   *oss << node->value << ',';
-  if (node->right) InorderPrint(node->right, oss);
+  if (node->right) {
+    InorderPrint(node->right, oss);
+  }
 }
 
 template <typename DataType>
 void BST<DataType>::Insert(const DataType& e) {
   NodePtr node = Node<DataType>::New(e);
-  Insert(root_, node);
+  Insert(&root_, node);
 }
 
 template <typename DataType>
-void BST<DataType>::Insert(NodePtr root, NodePtr node) {
-  if (!root) {
-    root = node;
+void BST<DataType>::Insert(NodePtr* root, const NodePtr& node) {
+  if (!(*root)) {
+    *root = node;
     return;
   }
-  ++root->size;
-  if (node->value < root->value) {
-    return Insert(root->left, node);
+  ++(*root)->size;
+  if (node->value < (*root)->value) {
+    return Insert(&((*root)->left), node);
   }
-  Insert(root->right, node);
+  Insert(&((*root)->right), node);
 }
 
 int main() {
   BST<int> bst;
-  for (int e : {3, 4, 10, 14, 7, 9, 16, 2, 8, 1}) bst.Insert(e);
+  for (int e : {8, 4, 10, 14, 3, 9, 16, 2, 7, 1}) bst.Insert(e);
   bst.InorderPrint();
   return 0;
 }
